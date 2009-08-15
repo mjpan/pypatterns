@@ -1,0 +1,12 @@
+This package implements some common patterns in Python.
+
+It requires the following:
+* Python 2.5
+
+Once installed (see INSTALL for instructions), your Python application can use pypatterns as follows.
+
+First, import the module:
+        import pypatterns
+
+See src/test/Test* for examples of usage.
+
