@@ -1,11 +1,12 @@
 import logging
 import sys
+import os
 import unittest
 
-sys.path.insert(0, '../')
+APP_ROOT = os.getenv('APP_ROOT')
+sys.path.insert(0, '%s/pypatterns/src' % APP_ROOT)
 
 import pypatterns.command as CommandModule
-
 
 class HasKeyValidator(CommandModule.Validator):
 
