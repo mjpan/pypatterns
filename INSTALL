@@ -1,2 +1,6 @@
+* install required dependencies
+  * Python 2.5+
+  * PEAK trellis
+  * currypy
 * Ensure that the pypatterns package is in your Python search path
 * Upcoming: automated installation of this package

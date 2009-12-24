@@ -5,11 +5,9 @@ import logging
 
 APP_ROOT = os.getenv('APP_ROOT')
 
-# need to add this to the path
-# so that pomsets.filter can import the module
 sys.path.insert(0, '%s/currypy/src' % APP_ROOT)
-
 sys.path.insert(0, '%s/pypatterns/src' % APP_ROOT)
+
 import pypatterns.filter as FilterModule
 
 class Resource(object):
