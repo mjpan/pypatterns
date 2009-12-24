@@ -231,12 +231,13 @@ class Row(object):
 
     def __getstate__(self):
         odict = self.__dict__.copy()
-        odict['_values'] = list(odict['_values'])
+        odict['_values'] = dict(odict['_values'])
         return odict
     
-    def __setstate__(self, dict):
-        self.table(dict['_table'])
-        values = trellis.List(dict['_values'])
+    def __setstate__(self, odict):
+        self.table(odict['_table'])
+        d = odict['_values']
+        values = trellis.Dict(**d)
         self.values(values)
         return    
     
