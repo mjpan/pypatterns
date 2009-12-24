@@ -40,6 +40,21 @@ class Table(object):
         
         return
 
+    def __getstate__(self):
+        odict = self.__dict__.copy()
+        odict['_rows'] = list(odict['_rows'])
+        odict['_columns'] = dict(
+            (key, set(value)) 
+            for key, value in odict['_columns'].iteritems())
+        return odict
+
+    def __setstate__(self, odict):
+        self.rows(trellis.List(odict['_rows']))
+        d = dict((key, trellis.Set(value))
+                 for key, value in odict['_columns'].iteritems())
+        self.columns(trellis.Dict(**d))
+        return
+    
     def __eq__(self, other):
         for difference in self.getDifferencesWith(other):
             return False
@@ -214,6 +229,17 @@ class Row(object):
         
         return
 
+    def __getstate__(self):
+        odict = self.__dict__.copy()
+        odict['_values'] = list(odict['_values'])
+        return odict
+    
+    def __setstate__(self, dict):
+        self.table(dict['_table'])
+        values = trellis.List(dict['_values'])
+        self.values(values)
+        return    
+    
     def values(self, value=None):
         if value is not None:
             self._values = value
