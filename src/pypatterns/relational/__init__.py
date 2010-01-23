@@ -1,7 +1,8 @@
 import copy
 
-import peak.events
-from peak.events import trellis
+#import peak.events
+#from peak.events import trellis
+import mext.reaction.collections as trellis
 
 import currypy
 
