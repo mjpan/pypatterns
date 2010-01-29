@@ -5,7 +5,6 @@ import logging
 
 APP_ROOT = os.getenv('APP_ROOT')
 
-sys.path.insert(0, '%s/pypatterns/src' % APP_ROOT)
 sys.path.insert(0, '%s/currypy/src' % APP_ROOT)
 import currypy
 
