@@ -8,8 +8,6 @@ import logging
 
 APP_ROOT = os.getenv('APP_ROOT')
 
-sys.path.insert(0, '%s/pypatterns/src' % APP_ROOT)
-sys.path.insert(0, '%s/currypy/src' % APP_ROOT)
 import currypy
 
 import pypatterns.filter as FilterModule
@@ -47,6 +45,11 @@ class TestCase(unittest.TestCase):
 
         self.assertPickleable(table)
 
+        unpickledTable = self.assertJsonPickleable(table)
+        self.assertEquals(table.rowCount(), unpickledTable.rowCount())
+        for actualValues, expectedValues in zip(unpickledTable.retrieve(columns=['column1', 'column2', 'column3']), rowValuesList):
+            self.assertEquals(actualValues, expectedValues)
+
         return
     
     
@@ -62,7 +65,10 @@ class TestCase(unittest.TestCase):
             pass
 
         self.assertPickleable(row1)
-        
+
+        unpickledRow = self.assertJsonPickleable(row1)
+        self.assertEquals(row1.values(), unpickledRow.values())
+
         return
 
 
@@ -75,6 +81,15 @@ class TestCase(unittest.TestCase):
             newObject = pickle.load(f)
         return
 
+
+    def assertJsonPickleable(self, objectToPickle):
+
+        import jsonpickle
+        pickle = jsonpickle.encode(objectToPickle)
+        
+        unpickledObject = jsonpickle.decode(pickle)
+
+        return unpickledObject
 
 
     # END class TestCase
