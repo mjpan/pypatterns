@@ -8,7 +8,6 @@ import TestRelationalPickle
 
 def additional_tests():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestCommand.TestCase, 'test'))
     suite.addTest(unittest.makeSuite(TestFilter.TestCase, 'test'))
     suite.addTest(unittest.makeSuite(TestRelational.TestCase, 'test'))
     suite.addTest(unittest.makeSuite(TestRelationalCommand.TestCase, 'test'))

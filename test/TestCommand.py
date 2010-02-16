@@ -155,13 +155,8 @@ class FailCommandBuilder3(CommandModule.CommandBuilder):
     pass
 
 
-class TestCase(unittest.TestCase):
+class TestCommand(unittest.TestCase):
 
-    def setUp(self):
-        return
-
-    def tearDown(self):
-        return
 
     def testValidator1(self):
         map = {}
@@ -381,15 +376,8 @@ class TestCase(unittest.TestCase):
             assert map[key] == originalValue, 'map[%s] = %s' % (key, map[key])
             pass
 
-        commandManager = CommandModule.CommandManager()
-
-        self.assertRaises(CommandModule.ExecutionError, 
-                          commandManager.do,
-                          command)
-
-        assert map[key] == originalValue, 'map[%s] = %s' % (key, map[key])
-
         return
+
 
     def testCommandBuilder1(self):
         """
@@ -477,8 +465,304 @@ class TestCase(unittest.TestCase):
         return
 
 
-    # END class TestCase
+    # END class TestCommand
     pass
+
+
+
+class TestCommandManager(unittest.TestCase):
+
+    def setUp(self):
+        self.commandManager = CommandModule.CommandManager()
+        return
+        
+    def testAddKeyCommand1(self):
+        """
+        verify that the basic command execute works
+        """
+        map = {}
+        key = 1
+        command = AddKeyCommand(map, key)
+        validator = CommandModule.NotValidator(
+            HasKeyValidator(map, key)
+            )
+        command.validator(validator)
+
+        self.commandManager.do(command)
+
+        assert key in map
+
+        self.commandManager.undo()
+
+        assert not key in map
+
+        return
+
+
+    def testAddKeyCommand2(self):
+        """
+        verify that the basic command execute works
+        """
+        key = 1
+        map = {key:None}
+        command = AddKeyCommand(map, key)
+        validator = CommandModule.NotValidator(
+            HasKeyValidator(map, key)
+            )
+        command.validator(validator)
+
+        self.assertTrue(key in map)
+        self.commandManager.do(command)
+        self.assertTrue(key in map)
+
+        return
+
+    def testSetValueCommand1(self):
+        """
+        """
+        key = 1
+        value = 'foo'
+        map = {}
+        command = SetValueCommand(map, key, value)
+        validator = HasKeyValidator(map, key)
+        command.validator(validator)
+
+        self.assertFalse(key in map)
+        self.assertFalse(self.commandManager.do(command))
+        self.assertFalse(key in map)
+
+        return
+
+    def testSetValueCommand2(self):
+        """
+        """
+        key = 1
+        originalValue = 'original'
+        newValue = 'foo'
+        map = {key:originalValue}
+        command = SetValueCommand(map, key, newValue)
+        validator = HasKeyValidator(map, key)
+        command.validator(validator)
+
+        self.commandManager.do(command)
+        assert map[key] == newValue
+        
+        self.commandManager.undo()
+        assert map[key] == originalValue
+
+        return
+
+    def testCompoundCommand1(self):
+        key = 1
+        value = 'foo'
+        map = {}
+
+        command = CommandModule.CompositeCommand()
+
+        hasKeyValidator = HasKeyValidator(map, key)
+
+        addKeyCommand = AddKeyCommand(map, key)
+        notHasKeyValidator = CommandModule.NotValidator(hasKeyValidator)
+        addKeyCommand.validator(notHasKeyValidator)
+
+        command.addCommand(addKeyCommand)
+
+        setValueCommand = SetValueCommand(map, key, value)
+        setValueCommand.validator(hasKeyValidator)
+        command.addCommand(setValueCommand)
+
+        self.commandManager.do(command)
+        assert map[key] == value
+
+        self.commandManager.undo()
+        assert not key in map
+        
+        return
+
+    def testCompoundCommand2(self):
+        """
+        """
+
+        key = 1
+        originalValue = 'original'
+        newValue = 'foo'
+        map = {key:originalValue}
+
+        command = CommandModule.CompositeCommand()
+
+        hasKeyValidator = HasKeyValidator(map, key)
+        notHasKeyValidator = CommandModule.NotValidator(hasKeyValidator)
+
+        setValueCommand = SetValueCommand(map, key, newValue)
+        setValueCommand.validator(hasKeyValidator)
+        command.addCommand(setValueCommand)
+
+        deleteKeyCommand = DeleteKeyCommand(map, key)
+        deleteKeyCommand.validator(hasKeyValidator)
+        command.addCommand(deleteKeyCommand)
+
+        self.commandManager.do(command)
+        assert not key in map
+
+        self.commandManager.undo()
+        assert map[key] == originalValue
+        
+        return
+
+    def testCompoundCommand3(self):
+        """
+        test that if a subcommand fails because of a validator, 
+        then everything is rolled back
+        """
+
+        key = 1
+        originalValue = 'original'
+        newValue = 'foo'
+        map = {key:originalValue}
+
+        command = CommandModule.CompositeCommand()
+
+        hasKeyValidator = HasKeyValidator(map, key)
+        notHasKeyValidator = CommandModule.NotValidator(hasKeyValidator)
+
+        setValueCommand = SetValueCommand(map, key, newValue)
+        setValueCommand.validator(hasKeyValidator)
+        command.addCommand(setValueCommand)
+
+        failValidator = CommandModule.VALIDATOR_FAIL
+
+        deleteKeyCommand = DeleteKeyCommand(map, key)
+        deleteKeyCommand.validator(failValidator)
+        command.addCommand(deleteKeyCommand)
+
+        self.assertEquals(map[key], originalValue)
+        self.assertFalse(self.commandManager.do(command))
+        self.assertEquals(map[key], originalValue)
+
+        return
+
+
+
+    def testCompoundCommand4(self):
+        """
+        verifies that if a subcommand fails during execution
+        then all subcommands are rolled back
+        """
+
+        key = 1
+        originalValue = 'original'
+        newValue = 'foo'
+        map = {key:originalValue}
+
+        command = CommandModule.CompositeCommand()
+
+        hasKeyValidator = HasKeyValidator(map, key)
+        notHasKeyValidator = CommandModule.NotValidator(hasKeyValidator)
+
+        setValueCommand = SetValueCommand(map, key, newValue)
+        setValueCommand.validator(hasKeyValidator)
+        command.addCommand(setValueCommand)
+
+        deleteKeyCommand = DeleteKeyCommand(map, key)
+        deleteKeyCommand.validator(hasKeyValidator)
+        command.addCommand(deleteKeyCommand)
+
+        failCommand = FailCommand()
+        command.addCommand(failCommand)
+
+        self.assertEquals(map[key], originalValue)
+        self.assertFalse(self.commandManager.do(command))
+        self.assertEquals(map[key], originalValue)
+
+        return
+
+
+    def testCommandBuilder1(self):
+        """
+        """
+        key = 1
+        value = 'foo'
+        map = {}
+
+        command = CommandModule.CompositeCommand()
+
+        setValueCommand = SetValueCommand(map, key, value)
+        commandBuilder = CommandBuilder1(setValueCommand)
+
+        command.addCommand(setValueCommand)
+        command.addCommandBuilder(setValueCommand, commandBuilder)
+
+        self.commandManager.do(command)
+        assert map[key] == value
+
+        self.commandManager.undo()
+        assert not key in map
+
+        return
+
+    def testCommandBuilder2(self):
+        """
+        """
+        key = 1
+        value = 'foo'
+        map = {}
+
+        command = CommandModule.CompositeCommand()
+
+        addKeyCommand = AddKeyCommand(map, key)
+        commandBuilder = CommandBuilder2(addKeyCommand, value)
+
+        command.addCommand(addKeyCommand)
+        command.addCommandBuilder(addKeyCommand, commandBuilder)
+
+        self.commandManager.do(command)
+        assert map[key] == value
+
+        self.commandManager.undo()
+        assert not key in map
+
+        return
+
+
+    def testFailCommandBuilder(self):
+        """
+        this will tests that the command is undone
+        if a command added by the command builder fails
+        regardless if its added before or after the execution
+        """
+
+        key = 1
+        value = 'foo'
+        map = {}
+
+
+        for builderClass in [FailCommandBuilder1,
+                             FailCommandBuilder2,
+                             FailCommandBuilder3]:
+
+            command = CommandModule.CompositeCommand()
+
+            addKeyCommand = AddKeyCommand(map, key)
+            commandBuilder = CommandBuilder2(addKeyCommand, value)
+
+            command.addCommand(addKeyCommand)
+            command.addCommandBuilder(addKeyCommand, commandBuilder)
+
+            failCommandBuilder = builderClass(addKeyCommand)
+            command.addCommandBuilder(addKeyCommand, failCommandBuilder)
+
+            self.assertTrue(len(map) is 0)
+            self.assertFalse(self.commandManager.do(command))
+            self.assertTrue(len(map) is 0)
+
+            pass
+
+        return
+
+
+
+    pass
+
 
 
 def configLogging():
@@ -506,6 +790,8 @@ def configLogging():
 
     # end def configureLogging
     pass
+
+
 
 
 

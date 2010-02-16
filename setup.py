@@ -7,7 +7,10 @@ setup(
         'src',exclude=["*.test", "*.test.*", "test.*", "test"]),
     package_dir={'':'src'},
     test_suite="test",
-    install_requires = ['currypy>=0.1.0','Reaction>=0.2'],
+    install_requires = [
+        'currypy>=0.1.0',
+        'Reaction>=0.2'
+        ],
 
     # metadata for upload to PyPI
     author = "michael j pan",

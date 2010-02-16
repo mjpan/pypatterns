@@ -56,8 +56,16 @@ class Command(object):
             raise ValidationError('%s has already executed' % self)
         if not self._validator.validate():
             raise ValidationError('%s failed validation' % self)
-        self.execute()
-        self._hasExecuted = True
+
+        try:
+            self.execute()
+            self._hasExecuted = True
+        except Exception, e:
+            self.handleExecuteError()
+            raise
+        return
+
+    def handleExecuteError(self):
         return
 
     def execute(self):
@@ -76,6 +84,7 @@ class Command(object):
         """
         if not self._hasExecuted:
             raise ValidationError('%s has not yet executed' % self)
+
         self.unexecute()
         self._hasExecuted = False
         return
@@ -121,6 +130,9 @@ class CompositeCommand(Command):
         self._commandBuilders[command].append(commandBuilder)
         return
 
+    def handleExecuteError(self):
+        self.unexecute()
+        return
 
     def execute(self):
         # TODO:
@@ -128,6 +140,7 @@ class CompositeCommand(Command):
         # and not tied to any specific subcommand
 
         map(self._executeSubcommand, self._subcommands)
+
         pass
 
 
@@ -150,6 +163,7 @@ class CompositeCommand(Command):
         map(self._executeRawCommand, generatedCommands)
         return
 
+
     def _executeRawCommand(self, command):
         try:
             command.do()
@@ -160,8 +174,8 @@ class CompositeCommand(Command):
             # the thing executing self
             # is responsible for calling the undo
             logging.debug("failed _executeRawCommand >> %s" % e)
-            self.unexecute()
-            raise e
+            # self.unexecute()
+            raise
         return
 
 
@@ -207,12 +221,12 @@ class CommandManager(object):
             # the command failed validation
             # so there's no need to undo
             logging.debug('failed validation in commandManager.do >> %s' % e)
-            raise ExecutionError(e)
+            return False
         except Exception, e:
             logging.debug("failed commandManager.do >> %s" % e)
-            raise ExecutionError(e)
+            return False
 
-        return
+        return True
 
     def undo(self):
         if self._endIndex == 0:
