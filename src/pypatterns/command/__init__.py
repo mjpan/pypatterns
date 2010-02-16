@@ -1,4 +1,6 @@
 import logging
+import sys
+import traceback
 
 class Validator(object):
 
@@ -203,6 +205,13 @@ class CommandManager(object):
 
         return
 
+    def stackTrace(self, value=None):
+        if value is not None:
+            self._stackTrace = value
+        if not hasattr(self, '_stackTrace'):
+            self._stackTrace = None
+        return self._stackTrace
+
     def do(self, command):
         try:
             command.do()
@@ -217,13 +226,13 @@ class CommandManager(object):
 
             self._commandHistory.append(command)
             self._endIndex = len(self._commandHistory)
-        except ValidationError, e:
-            # the command failed validation
-            # so there's no need to undo
-            logging.debug('failed validation in commandManager.do >> %s' % e)
-            return False
         except Exception, e:
-            logging.debug("failed commandManager.do >> %s" % e)
+
+            exceptionType, exceptionValue, exceptionTraceback = sys.exc_info()
+            stackTrace = traceback.format_exception(
+                exceptionType, exceptionValue, exceptionTraceback)
+            self.stackTrace(stackTrace)
+
             return False
 
         return True

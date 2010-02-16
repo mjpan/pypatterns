@@ -529,6 +529,7 @@ class TestCommandManager(unittest.TestCase):
 
         self.assertFalse(key in map)
         self.assertFalse(self.commandManager.do(command))
+        self.assertTrue(self.commandManager.stackTrace() is not None)
         self.assertFalse(key in map)
 
         return
@@ -637,6 +638,7 @@ class TestCommandManager(unittest.TestCase):
 
         self.assertEquals(map[key], originalValue)
         self.assertFalse(self.commandManager.do(command))
+        self.assertTrue(self.commandManager.stackTrace() is not None)
         self.assertEquals(map[key], originalValue)
 
         return
@@ -672,6 +674,7 @@ class TestCommandManager(unittest.TestCase):
 
         self.assertEquals(map[key], originalValue)
         self.assertFalse(self.commandManager.do(command))
+        self.assertTrue(self.commandManager.stackTrace() is not None)
         self.assertEquals(map[key], originalValue)
 
         return
@@ -753,6 +756,7 @@ class TestCommandManager(unittest.TestCase):
 
             self.assertTrue(len(map) is 0)
             self.assertFalse(self.commandManager.do(command))
+            self.assertTrue(self.commandManager.stackTrace() is not None)
             self.assertTrue(len(map) is 0)
 
             pass
