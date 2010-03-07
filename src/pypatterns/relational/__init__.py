@@ -138,7 +138,7 @@ class Table(object):
     
     def addColumnAttribute(self, column, attribute):
         if not self.hasColumn(column):
-            raise NotImplementedError
+            raise KeyError('table does not have column %s' % column)
         
         self.columns()[column].add(attribute)
         return
@@ -259,10 +259,9 @@ class Row(object):
     def hasColumn(self, column):
         return self.table().hasColumn(column)
     
-    
     def setColumn(self, column, value):
         if not self.hasColumn(column):
-            raise NotImplementedError
+            raise KeyError('row does not have column %s' % column)
 
         self.values()[column] = value
         return

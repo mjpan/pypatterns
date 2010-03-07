@@ -9,7 +9,8 @@ setup(
     test_suite="test",
     install_requires = [
         'currypy>=0.1.0',
-        'Reaction>=0.2'
+        'Reaction>=0.2',
+        'jsonpickle>=0.3.1'
         ],
 
     # metadata for upload to PyPI
