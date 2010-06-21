@@ -2,14 +2,14 @@ from setuptools import setup, find_packages
 
 setup(
     name='pypatterns',
-    version='0.1.1',
+    version='0.1.2',
     packages=find_packages(
         'src',exclude=["*.test", "*.test.*", "test.*", "test"]),
     package_dir={'':'src'},
     test_suite="test",
     install_requires = [
         'currypy>=0.1.0',
-        'Reaction>=0.2',
+        'Reaction>=0.2.2',
         'jsonpickle>=0.3.1'
         ],
 
