@@ -505,7 +505,7 @@ class OrAccumulator(Accumulator):
         self._value = False
 
     def add(self, value):
-        self._value = value
+        self._value |= value
         if self._value:
             self._hasValue = True
 

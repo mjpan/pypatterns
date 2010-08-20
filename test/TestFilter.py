@@ -100,23 +100,26 @@ class TestCase(unittest.TestCase):
         name2 = "test2"
         name3 = "test3"
 
-        aFilter = FilterModule.constructAndFilter()
+        aFilter = FilterModule.constructOrFilter()
         aFilter.addFilter(FilterModule.NameFilter(name1))
-        aFilter.addFilter(FilterModule.NameFilter(name1))
+        aFilter.addFilter(FilterModule.NameFilter(name2))
 
         # if any passes, succeed
         aResource = Resource()
         aResource.name(name1)
         assert aFilter.matches(aResource), \
-            "expected notfilter to match resource named %s" % aResource.name()
+            "expected orfilter to match resource named %s" % aResource.name()
+
         aResource = Resource()
         aResource.name(name2)
         assert aFilter.matches(aResource), \
-            "expected notfilter to match resource named %s" % aResource.name()
+            "expected orfilter to match resource named %s" % aResource.name()
+
         aResource = Resource()
         aResource.name(name3)
         assert not aFilter.matches(aResource), \
-            "expected notfilter to match resource named %s" % aResource.name()
+            "expected orfilter to match resource named %s" % aResource.name()
+
         # run again
         aResource = Resource()
         aResource.name(name1)
@@ -144,13 +147,13 @@ class TestCase(unittest.TestCase):
         aResource = Resource()
         aResource.name(name1)
         assert aFilter.matches(aResource), \
-            "expected notfilter to match resource named %s" % aResource.name()
+            "expected andfilter to match resource named %s" % aResource.name()
 
         # if none passes, fail
         aResource = Resource()
         aResource.name(name2)
         assert aFilter.matches(aResource) is False, \
-            "expected notfilter to not match resource named %s" % aResource.name()
+            "expected andfilter to not match resource named %s" % aResource.name()
 
         # if only some passes, fail
         aFilter = FilterModule.constructAndFilter()
@@ -159,7 +162,7 @@ class TestCase(unittest.TestCase):
         aResource = Resource()
         aResource.name(name1)
         assert aFilter.matches(aResource) is False, \
-            "expected notfilter to not match resource named %s" % aResource.name()
+            "expected andfilter to not match resource named %s" % aResource.name()
 
         pass
 
