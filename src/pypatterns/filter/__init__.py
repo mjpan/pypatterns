@@ -111,7 +111,7 @@ class ObjectFilter(Filter):
 
         # default the actual value to object being passed in
         if objectFunction is None:
-            objectFunction = FUNCTION_IDENTITY,
+            objectFunction = FUNCTION_IDENTITY
         self._objectFunction = objectFunction
 
         # default comparator to identity comparison
