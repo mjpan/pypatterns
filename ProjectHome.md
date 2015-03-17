@@ -1,0 +1,1 @@
+This project implements some common patterns in Python
