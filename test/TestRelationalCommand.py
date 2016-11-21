@@ -3,6 +3,7 @@ import sys
 import unittest
 import logging
 
+
 APP_ROOT = os.getenv('APP_ROOT')
 sys.path.insert(0, '%s/pypatterns/src' % APP_ROOT)
 sys.path.insert(0, '%s/currypy/src' % APP_ROOT)
@@ -10,13 +11,13 @@ sys.path.insert(0, '%s/currypy/src' % APP_ROOT)
 
 import pypatterns.command as CommandModule
 import pypatterns.filter as FilterModule
-import pypatterns.relational as RelationalModule
-import pypatterns.relational.commands as RelationalCommandModule
+#import pypatterns.relational as RelationalModule
+#import pypatterns.relational.commands as RelationalCommandModule
 
 sys.path.insert(0,"../data")
 
 class TestCase(unittest.TestCase):
-
+    """
     COLUMNS = ['column1', 'column2', 'column3']
     
     
@@ -138,7 +139,7 @@ class TestCase(unittest.TestCase):
         
         return table
 
-    
+    """
     # END class TestCase
     pass
 
@@ -153,4 +154,5 @@ def main():
 
 if __name__=="__main__":
     main()
+
 

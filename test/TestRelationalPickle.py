@@ -6,17 +6,18 @@ import sys
 import unittest
 import logging
 
+
 APP_ROOT = os.getenv('APP_ROOT')
 
 import currypy
 
-import pypatterns.filter as FilterModule
-import pypatterns.relational as RelationalModule
+#import pypatterns.filter as FilterModule
+#import pypatterns.relational as RelationalModule
 
 sys.path.insert(0,"../data")
 
 class TestCase(unittest.TestCase):
-
+    """
     COLUMNS = ['column1', 'column2', 'column3']
 
     PICKLE_PATH = os.path.sep + os.path.join('tmp', 'TestRelationalPickle.pickle')
@@ -91,7 +92,7 @@ class TestCase(unittest.TestCase):
 
         return unpickledObject
 
-
+    """
     # END class TestCase
     pass
 
@@ -107,4 +108,5 @@ def main():
 
 if __name__=="__main__":
     main()
+
 

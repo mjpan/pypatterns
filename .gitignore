@@ -1,0 +1,4 @@
+*~
+*.pyc
+src/pypatterns.egg-info
+.eggs

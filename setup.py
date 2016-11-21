@@ -9,7 +9,6 @@ setup(
     test_suite="test",
     install_requires = [
         'currypy>=0.1.0',
-        'Reaction>=0.2.2',
         'jsonpickle>=0.3.1'
         ],
 
